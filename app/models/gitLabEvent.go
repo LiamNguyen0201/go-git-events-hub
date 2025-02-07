@@ -3,12 +3,12 @@ package models
 // GitLabEvent represents the entire event structure
 type GitLabEvent struct {
 	ID             int64    `json:"id" gorm:"primaryKey"`
-	ProjectID      int      `json:"project_id" gorm:"index"`
+	ProjectID      int64    `json:"project_id" gorm:"index"`
 	ActionName     string   `json:"action_name"`
-	TargetID       *int     `json:"target_id"`
-	TargetIID      *int     `json:"target_iid"`
+	TargetID       *int64   `json:"target_id"`
+	TargetIID      *int64   `json:"target_iid"`
 	TargetType     *string  `json:"target_type"`
-	AuthorID       int      `json:"author_id"`
+	AuthorID       int64    `json:"author_id"`
 	TargetTitle    *string  `json:"target_title"`
 	CreatedAt      string   `json:"created_at"`
 	Author         Author   `json:"author" gorm:"serializer:json"`
@@ -20,7 +20,7 @@ type GitLabEvent struct {
 
 // Author represents the author details
 type Author struct {
-	ID        int    `json:"id"`
+	ID        int64  `json:"id"`
 	Username  string `json:"username"`
 	Name      string `json:"name"`
 	State     string `json:"state"`
