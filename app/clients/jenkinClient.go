@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"git_events_hub/configs"
 	"git_events_hub/models"
-	"log"
+	"git_events_hub/utils"
 	"net/http"
 	"time"
 )
@@ -16,7 +16,7 @@ const maxRetries = 3
 // SendEventToWebhook forwards a GitLab event to an external endpoint
 func SendEventToWebhook(event models.GitLabEvent, retryCount int) {
 	if retryCount >= maxRetries {
-		log.Printf("Failed to send event ID=%d after %d retries\n", event.ID, maxRetries)
+		utils.LogInfof("Failed to send event ID=%d after %d retries\n", event.ID, maxRetries)
 		return
 	}
 
@@ -28,7 +28,7 @@ func SendEventToWebhook(event models.GitLabEvent, retryCount int) {
 	resp, err := client.Do(req)
 
 	if err != nil || resp.StatusCode >= 400 {
-		log.Printf("Error sending event ID=%d (Attempt %d): %v\n", event.ID, retryCount+1, err)
+		utils.LogInfof("Error sending event ID=%d (Attempt %d): %v\n", event.ID, retryCount+1, err)
 
 		// Exponential backoff before retrying
 		time.Sleep(time.Duration(2<<retryCount) * time.Second)
@@ -39,5 +39,5 @@ func SendEventToWebhook(event models.GitLabEvent, retryCount int) {
 	}
 	defer resp.Body.Close()
 
-	log.Printf("Event ID=%d sent successfully\n", event.ID)
+	utils.LogInfof("Event ID=%d sent successfully\n", event.ID)
 }

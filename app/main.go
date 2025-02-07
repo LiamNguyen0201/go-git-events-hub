@@ -7,6 +7,7 @@ import (
 	"git_events_hub/handlers"
 	"git_events_hub/middlewares"
 	"git_events_hub/models"
+	"git_events_hub/utils"
 	"log"
 	"sync"
 	"time"
@@ -27,11 +28,11 @@ func startTicker() {
 	defer ticker.Stop()
 
 	for range ticker.C {
-		log.Println("Checking for new GitLab events...")
+		utils.LogInfo("Checking for new GitLab events...")
 		events := clients.FetchGitLabEvents()
 
 		if len(events) == 0 {
-			log.Println("No new events found.")
+			utils.LogInfo("No new events found.")
 			continue
 		}
 
@@ -52,7 +53,7 @@ func startTicker() {
 		// Send events to the channel
 		for _, event := range events {
 			if !databases.EventExists(event.ID) {
-				log.Printf("New event found: ID=%d Action=%s", event.ID, event.ActionName)
+				utils.LogInfof("New event found: ID=%d Action=%s", event.ID, event.ActionName)
 
 				// Save to database
 				databases.SaveEvent(event)
@@ -60,7 +61,7 @@ func startTicker() {
 				wg.Add(1)
 				eventChannel <- event
 			} else {
-				log.Printf("Skipping existing event: ID=%d", event.ID)
+				utils.LogInfof("Skipping existing event: ID=%d", event.ID)
 			}
 		}
 
@@ -75,7 +76,11 @@ func startTicker() {
 func main() {
 	log.Println("Starting Git events hub Service...")
 
-	databases.InitDB()
+	// ** Setup Logrus **
+	logger := utils.GetLogger()
+
+	// ** Setup DB **
+	databases.InitDB(logger)
 
 	// Start the ticker in a separate goroutine
 	go startTicker()
@@ -83,14 +88,21 @@ func main() {
 	// Initialize Gin router
 	r := gin.Default()
 
+	// Set request logger
+	r.Use(middlewares.LoggerMiddleware(logger))
+
+	// Set default page and limit in case of missing
 	r.Use(middlewares.PaginationMiddleware())
 
 	// Add custom recovery middleware
-	r.Use(middlewares.RecoveryWithLogger())
+	r.Use(middlewares.RecoveryWithLogger(logger))
 
 	r.GET("/events", handlers.GetEvents)
 	r.GET("/events/:id", handlers.GetEventDetail)
 
 	// Start server
-	r.Run(":" + configs.Port)
+	logger.Info("Starting Gin server on :8080")
+	if err := r.Run(":" + configs.Port); err != nil {
+		logger.Fatal("Failed to start server:", err)
+	}
 }

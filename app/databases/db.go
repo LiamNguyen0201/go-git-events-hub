@@ -3,9 +3,11 @@ package databases
 import (
 	"git_events_hub/models"
 	"git_events_hub/utils"
-	"log"
-	"strconv"
 
+	"strconv"
+	"time"
+
+	"github.com/sirupsen/logrus"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -14,15 +16,26 @@ import (
 var db *gorm.DB
 
 // Initialize the SQLite database
-func InitDB() {
-	log.Println("(InitDB) Starting ...")
+func InitDB(logrusLogger *logrus.Logger) {
+	utils.LogInfo("(InitDB) Starting ...")
 
 	var err error
+
+	// GORM logger using Logrus
+	newLogger := logger.New(
+		logrusLogger, // Logrus as GORM logger
+		logger.Config{
+			SlowThreshold: time.Second, // Log queries slower than 1s
+			LogLevel:      logger.Info, // Log all SQL queries
+			Colorful:      false,
+		},
+	)
+
 	db, err = gorm.Open(sqlite.Open("events.db"), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info), // ✅ Logs all SQL queries
+		Logger: newLogger,
 	})
 	if err != nil {
-		log.Fatal("Failed to connect to database:", err)
+		utils.LogFatal("Failed to connect to database:", err)
 	}
 
 	// Auto-migrate schema
@@ -49,8 +62,8 @@ func GetEventByID(eventID int64) (*models.GitLabEvent, error) {
 }
 
 func GetEvents(projectID string, startDate string, endDate string, page int, limit int) (*[]models.GitLabEvent, int64) {
-	log.Println("(GetEvents) Page: " + strconv.Itoa(page))
-	log.Println("(GetEvents) Limit: " + strconv.Itoa(limit))
+	utils.LogDebug("(GetEvents) Page: " + strconv.Itoa(page))
+	utils.LogDebug("(GetEvents) Limit: " + strconv.Itoa(limit))
 
 	var events []models.GitLabEvent
 	var total int64

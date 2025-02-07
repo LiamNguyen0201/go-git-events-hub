@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"git_events_hub/configs"
 	"git_events_hub/models"
+	"git_events_hub/utils"
 	"io/ioutil"
-	"log"
 	"net/http"
 )
 
@@ -17,11 +17,11 @@ func FetchGitLabEvents() []models.GitLabEvent {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Println("Error fetching GitLab events:", err)
+		utils.LogInfo("Error fetching GitLab events:", err)
 		return nil
 	}
 	defer resp.Body.Close()
-	log.Println("Status code: " + resp.Status)
+	utils.LogInfo("Status code: " + resp.Status)
 
 	body, _ := ioutil.ReadAll(resp.Body)
 	var events []models.GitLabEvent

@@ -1,17 +1,17 @@
 package middlewares
 
 import (
-	"log"
 	"net/http"
 	"runtime/debug"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
-func RecoveryWithLogger() gin.HandlerFunc {
+func RecoveryWithLogger(logger *logrus.Logger) gin.HandlerFunc {
 	return gin.CustomRecovery(func(c *gin.Context, recovered interface{}) {
 		// Log the stack trace
-		log.Printf("Panic occurred: %v\n%s", recovered, debug.Stack())
+		logger.Infof("Panic occurred: %v\n%s", recovered, debug.Stack())
 
 		// Respond with an internal server error
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
