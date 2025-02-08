@@ -24,5 +24,8 @@ go.work.sum
 # env file
 .env
 
+# Air temporary folder
+tmp
+
 # SQLite database
 *.db

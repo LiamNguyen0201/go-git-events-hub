@@ -1,7 +1,7 @@
 # go-git-events-hub
 A center hub that polling events from multiple Git repositories then forwarding them to multiple HTTP endpoints
 
-# Dependencies
+## Dependencies
 
 ```shell
 ## Environment variables
@@ -35,5 +35,19 @@ go get github.com/gin-gonic/gin
 go get github.com/go-playground/validator/v10
 ```
 
+## Hot reload
+
+```shell
+## Install air via go install
+go install github.com/air-verse/air@latest
+
+## Generate configuration file
+air init
+
+## Run the Gin Server with air
+air
+```
+
 ## Reference
 - [List a projects visible events](https://docs.gitlab.com/ee/api/events.html#list-a-projects-visible-events)
+- [?](https://gilangprambudi.medium.com/streamlining-log-management-in-go-with-grafana-loki-integration-8b124f2e4121)
