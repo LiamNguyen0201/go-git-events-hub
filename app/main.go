@@ -83,7 +83,9 @@ func main() {
 	databases.InitDB(logger)
 
 	// Start the ticker in a separate goroutine
-	go startTicker()
+	if configs.EnableTicker {
+		go startTicker()
+	}
 
 	// Initialize Gin router
 	r := gin.Default()
@@ -97,8 +99,11 @@ func main() {
 	// Add custom recovery middleware
 	r.Use(middlewares.RecoveryWithLogger(logger))
 
-	r.GET("/events", handlers.GetEvents)
-	r.GET("/events/:id", handlers.GetEventDetail)
+	r.GET("/api/gitlab/events", handlers.GetEvents)
+	r.GET("/api/gitlab/events/:id", handlers.GetEventDetail)
+
+	r.POST("/api/gitlab/projects", handlers.PullProject)
+	r.GET("/api/gitlab/projects/:id", handlers.GetProjectDetail)
 
 	// Start server
 	logger.Info("Starting Gin server on :8080")

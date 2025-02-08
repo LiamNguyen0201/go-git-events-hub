@@ -54,8 +54,9 @@ func DotEnvVariableInt(key string, defaultValue int64) int64 {
 var (
 	ApplicationName = "git-events-hub"
 	DatabasePath    = "events.db"
-	GitLabAPIURL    = "https://gitlab.com/api/v4/events"
+	GitLabAPIURL    = "https://gitlab.com"
 	GitLabToken     = DotEnvVariable("GITLAB_TOKEN") // Set this as an env variable
+	EnableTicker    = DotEnvVariableBool("ENABLE_TICKER", false)
 	Environment     = DotEnvVariableWithDefault("ENVIRONMENT", "development")
 	LogWithLogstash = DotEnvVariableBool("LOG_WITH_LOGSTASH", false)
 	LogstashAddress = DotEnvVariableWithDefault("LOG_LOGSTASH_ADDRESS", "localhost:5044")

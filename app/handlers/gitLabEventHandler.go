@@ -18,7 +18,6 @@ func GetEvents(c *gin.Context) {
 
 	events, total := databases.GetEvents(projectID, startDate, endDate, page, limit)
 
-	// Return JSON response
 	c.JSON(http.StatusOK, gin.H{
 		"total":   total,
 		"page":    page,
@@ -40,6 +39,5 @@ func GetEventDetail(c *gin.Context) {
 		return
 	}
 
-	// Return event details
 	c.JSON(http.StatusOK, event)
 }
