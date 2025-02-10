@@ -59,6 +59,10 @@ func LogDebug(args ...interface{}) {
 	logrusLogger.Debug(args...)
 }
 
+func LogDebugf(input string, args ...interface{}) {
+	logrusLogger.Debugf(input, args...)
+}
+
 func LogInfo(args ...interface{}) {
 	logrusLogger.Info(args...)
 }

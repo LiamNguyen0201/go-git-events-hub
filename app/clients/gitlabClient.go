@@ -1,51 +1,52 @@
 package clients
 
 import (
-	"encoding/json"
 	"git_events_hub/configs"
 	"git_events_hub/models"
 	"git_events_hub/utils"
-	"io/ioutil"
-	"net/http"
 	"strconv"
+
+	"resty.dev/v3"
 )
 
 func FetchGitLabEvents() []models.GitLabEvent {
-	req, _ := http.NewRequest("GET", configs.GitLabAPIURL+"/api/v4/events", nil)
-	req.Header.Set("PRIVATE-TOKEN", configs.GitLabToken)
+	var events []models.GitLabEvent
 
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil || resp.StatusCode >= 400 {
+	c := resty.New()
+	defer c.Close()
+
+	resp, err := c.R().
+		SetHeader("PRIVATE-TOKEN", configs.GitLabToken).
+		SetResult(events).
+		Get(configs.GitLabAPIURL + "/api/v4/events")
+	utils.LogInfof("(FetchGitLabEvents) Status code: %d", resp.StatusCode())
+
+	if err != nil || resp.StatusCode() >= 400 {
 		utils.LogInfo("(FetchGitLabEvents) Error fetching GitLab events", err)
 		return nil
 	}
-	defer resp.Body.Close()
-	utils.LogInfo("(FetchGitLabEvents) Status code: " + resp.Status)
-
-	body, _ := ioutil.ReadAll(resp.Body)
-	var events []models.GitLabEvent
-	json.Unmarshal(body, &events)
 
 	return events
 }
 
 func FetchGitLabProject(projectID int64) *models.GitLabProject {
-	req, _ := http.NewRequest("GET", configs.GitLabAPIURL+"/api/v4/projects/"+strconv.FormatInt(projectID, 10), nil)
-	req.Header.Set("PRIVATE-TOKEN", configs.GitLabToken)
+	utils.LogDebugf("(FetchGitLabProject) GitLab project : %d", projectID)
 
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil || resp.StatusCode >= 400 {
-		utils.LogInfo("(FetchGitLabProject) Error fetching GitLab project:", err)
+	var project *models.GitLabProject
+
+	c := resty.New()
+	defer c.Close()
+
+	resp, err := c.R().
+		SetHeader("PRIVATE-TOKEN", configs.GitLabToken).
+		SetResult(project).
+		Get(configs.GitLabAPIURL + "/api/v4/projects/" + strconv.FormatInt(projectID, 10))
+	utils.LogInfof("(FetchGitLabProject) Status code: %d", resp.StatusCode())
+
+	if err != nil || resp.StatusCode() >= 400 {
+		utils.LogInfof("(FetchGitLabProject) Error fetching GitLab project : %d, detail: %s", projectID, err)
 		return nil
 	}
-	defer resp.Body.Close()
-	utils.LogInfof("(FetchGitLabProject) Status code: %s", resp.Status)
-
-	body, _ := ioutil.ReadAll(resp.Body)
-	var project *models.GitLabProject
-	json.Unmarshal(body, &project)
 
 	return project
 }

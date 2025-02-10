@@ -20,10 +20,13 @@ func PullProject(c *gin.Context) {
 		return
 	}
 
-	project := clients.FetchGitLabProject(request.ID)
-	databases.SaveProject(*project)
-
-	c.JSON(http.StatusOK, project)
+	if project := clients.FetchGitLabProject(request.ID); project != nil {
+		databases.SaveProject(*project)
+		c.JSON(http.StatusOK, project)
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Project not found"})
+		return
+	}
 }
 
 func GetProjectDetail(c *gin.Context) {

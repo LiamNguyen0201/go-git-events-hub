@@ -11,6 +11,9 @@ go get github.com/joho/godotenv
 go get golang.org/x/oauth2
 go get golang.org/x/oauth2/google
 
+## HTTP client
+go get resty.dev/v3
+
 ## JWT
 go get github.com/golang-jwt/jwt/v5
 
@@ -50,4 +53,6 @@ air
 
 ## Reference
 - [List a projects visible events](https://docs.gitlab.com/ee/api/events.html#list-a-projects-visible-events)
+- [Resty document](https://resty.dev/docs/)
 - [?](https://gilangprambudi.medium.com/streamlining-log-management-in-go-with-grafana-loki-integration-8b124f2e4121)
+- [Flyte is a workflow orchestrator](https://docs.flyte.org/en/latest/user_guide/introduction.html)

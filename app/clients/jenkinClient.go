@@ -1,13 +1,12 @@
 package clients
 
 import (
-	"bytes"
-	"encoding/json"
 	"git_events_hub/configs"
 	"git_events_hub/models"
 	"git_events_hub/utils"
-	"net/http"
 	"time"
+
+	"resty.dev/v3"
 )
 
 // Max retries for failed requests
@@ -20,14 +19,14 @@ func SendEventToWebhook(event models.GitLabEvent, retryCount int) {
 		return
 	}
 
-	eventJSON, _ := json.Marshal(event)
-	req, _ := http.NewRequest("POST", configs.WebhookURL, bytes.NewBuffer(eventJSON))
-	req.Header.Set("Content-Type", "application/json")
+	c := resty.New()
+	defer c.Close()
 
-	client := &http.Client{Timeout: 5 * time.Second}
-	resp, err := client.Do(req)
+	resp, err := c.R().
+		SetBody(event).
+		Post(configs.WebhookURL)
 
-	if err != nil || resp.StatusCode >= 400 {
+	if err != nil || resp.StatusCode() >= 400 {
 		utils.LogInfof("Error sending event ID=%d (Attempt %d): %v\n", event.ID, retryCount+1, err)
 
 		// Exponential backoff before retrying
