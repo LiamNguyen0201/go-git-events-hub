@@ -11,7 +11,7 @@ import (
 )
 
 func PullProject(c *gin.Context) {
-	var request dtos.PullGitLabProjectRequest
+	var request dtos.GitLabProjectRequestDTO
 
 	// Bind JSON request
 	if err := c.ShouldBindJSON(&request); err != nil {
