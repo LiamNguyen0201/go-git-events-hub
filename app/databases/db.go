@@ -40,4 +40,5 @@ func InitDB(logrusLogger *logrus.Logger) {
 	// Auto-migrate schema
 	db.AutoMigrate(&models.GitLabEvent{})
 	db.AutoMigrate(&models.GitLabProject{})
+	db.AutoMigrate(&models.Workflow{})
 }

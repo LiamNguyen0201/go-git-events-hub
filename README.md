@@ -4,6 +4,9 @@ A center hub that polling events from multiple Git repositories then forwarding 
 ## Dependencies
 
 ```shell
+## Copy objects
+go get github.com/jinzhu/copier
+
 ## Environment variables
 go get github.com/joho/godotenv
 
@@ -49,6 +52,13 @@ air init
 
 ## Run the Gin Server with air
 air
+```
+
+## Run
+
+```shell
+cd app
+go run .
 ```
 
 ## Reference

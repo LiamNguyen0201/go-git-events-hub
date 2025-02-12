@@ -105,6 +105,12 @@ func main() {
 	r.POST("/api/gitlab/projects", handlers.PullProject)
 	r.GET("/api/gitlab/projects/:id", handlers.GetProjectDetail)
 
+	// Workflow Routes
+	r.GET("/api/workflows", handlers.GetWorkflows)
+	r.POST("/api/workflows", handlers.CreateWorkflow)
+	r.GET("/api/workflows/:id", handlers.GetWorkflow)
+	r.PUT("/api/workflows/:id", handlers.UpdateWorkflow)
+
 	// Start server
 	logger.Info("Starting Gin server on :8080")
 	if err := r.Run(":" + configs.Port); err != nil {
