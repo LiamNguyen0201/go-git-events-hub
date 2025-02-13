@@ -7,6 +7,9 @@ A center hub that polling events from multiple Git repositories then forwarding 
 ## Copy objects
 go get github.com/jinzhu/copier
 
+## Distributed lock
+go get github.com/bsm/redislock
+
 ## Environment variables
 go get github.com/joho/godotenv
 
