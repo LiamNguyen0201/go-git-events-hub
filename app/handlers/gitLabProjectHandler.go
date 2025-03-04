@@ -36,11 +36,11 @@ func GetProjectDetail(c *gin.Context) {
 		return
 	}
 
-	event, err := databases.GetProjectByID(utils.StringToNumber(projectID))
+	project, err := databases.GetProjectByID(utils.StringToNumber(projectID))
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Project not found"})
 		return
 	}
 
-	c.JSON(http.StatusOK, event)
+	c.JSON(http.StatusOK, project)
 }
